@@ -18,7 +18,7 @@ const winSound = new Audio('sounds/c6rrect-156911.mp3');
 // Variaveis globais do jogo
 let cards = [];
 let flippedCards = [];
-let matchedPairs = 0;
+let matchedPairsC = 0;
 let attempts = 0;
 let gameStarted = false;
 let startTime = null;
@@ -37,7 +37,7 @@ function shuffleArray(array) {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j] = shuffled[j], shuffled[i]];
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
 }
@@ -97,8 +97,8 @@ function checkMatch() {
         matchSound.play();
         card1.classList.add('matched');
         card2.classList.add('matched');
-        matchedPairs++;
-        matchedPairsSpan.textContent = matchedPairs;
+        matchedPairsC++;
+        matchedPairsSpan.textContent = matchedPairsC;
 
         setTimeout(() => {
             card1.style.opacity = '0';
@@ -107,7 +107,7 @@ function checkMatch() {
             card2.style.pointerEvents = 'none';
         }, 500);
 
-        if (matchedPairs === 8) {
+        if (matchedPairsC === 8) {
             endGame();
         }
     } else {
@@ -149,7 +149,7 @@ function endGame() {
 function resetGame() {
     cards = [];
     flippedCards = [];
-    matchedPairs = 0;
+    matchedPairsC= 0;
     attempts = 0;
     gameStarted = false;
     startTime = null;
