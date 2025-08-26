@@ -10,6 +10,11 @@ const imageUrls = [
     'img/evo.avif'
 ];
 
+const clickSound = new Audio('sounds/sfx-office-post-it.mp3');
+const matchSound = new Audio('sounds/goodresult-82807.mp3');
+const noMatchSound = new Audio('sounds/error-96563.mp3');
+const winSound = new Audio('sounds/c6rrect-156911.mp3');
+
 // Variaveis globais do jogo
 let cards = [];
 let flippedCards = [];
@@ -25,6 +30,7 @@ const attemptsSpan = document.getElementById('attempts');
 const timeSpan = document.getElementById('time');
 const messageDiv = document.getElementById('message');
 const resetBtn = document.getElementById('resetBtn');
+const matchedPairsSpan = document.getElementById('matchedPairs');
 
 // Função que embaralha um array (algoritimo Fisher-Yates)
 function shuffleArray(array) {
@@ -66,7 +72,7 @@ function flipCard(card) {
     }
 
     if (card.classList.add('flipped') ||
-    card.classList.add('matched') |
+    card.classList.add('matched') ||
     flippedCards.length >= 2) {
      return;
 
@@ -74,6 +80,8 @@ function flipCard(card) {
 
     card.classList.add('flipped');
     flippedCards.push(card);
+    clickSound.currentTime = 0;
+    clickSound.play();
 
     if (flippedCards.length === 2) {
         attempts++;
@@ -86,14 +94,24 @@ function flipCard(card) {
 function checkMatch() {
     const [card1, card2] = flippedCards;
     if (card1.dataset.image === card2.dataset.image) {
+        matchSound.play();
         card1.classList.add('matched');
         card2.classList.add('matched');
         matchedPairs++;
+        matchedPairsSpan.textContent = matchedPairs;
+
+        setTimeout(() => {
+            card1.style.opacity = '0';
+            card2.style.opacity = '0';
+            card1.style.pointerEvents = 'none';
+            card2.style.pointerEvents = 'none';
+        }, 500);
 
         if (matchedPairs === 8) {
             endGame();
         }
     } else {
+        noMatchSound.play();
         card1.classList.remove('flipped');
         card2.classList.remove('flipped');
     }
@@ -115,14 +133,17 @@ function updateTimer() {
     const minutes = Math.floor(elapsedTime / 60);
     const seconds = elapsedTime %60;
 
-    const formattedTime = `${minutes.toString().padStart(2, '0')}`;
+    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}'`;
     timeSpan.textContent = formattedTime;
 }
 
 function endGame() {
     clearInterval(timerInterval);
+    winSound.currentTime = 0;
+    winSound,play();
     messageDiv.textContent = `🎉 Você ganhou em ${attempts} tentativas!`;
-    messageDiv.className = 'message-win-message';
+    messageDiv.classList.add('win-message');
+    messageDiv.classList.add('show');
 }
 
 function resetGame() {
@@ -141,6 +162,7 @@ function resetGame() {
     timeSpan.textContent = '00:00';
     messageDiv.textContent = '';
     messageDiv.className = 'message';
+    matchedPairsSpan.textContent = '0';
 
     initGame()
 }
